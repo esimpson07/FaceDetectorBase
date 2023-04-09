@@ -1,3 +1,4 @@
+import tkinter as tk
 import face_recognition
 import imutils
 import pickle
@@ -11,6 +12,27 @@ faceCascade = cv2.CascadeClassifier(faceCascadePath)
 data = pickle.loads(open(r"C:\Users\edwar\Documents\Coding\Python\facialrecognitioncode\face_enc", "rb").read())
 
 camera = cv2.VideoCapture(0)
+
+my_w = tk.Tk()
+my_w.geometry("1530x780")
+
+c_v1 = tk.IntVar()
+c1 = tk.Checkbutton(my_w,text='Edward Simpson',variable=c_v1,
+	onvalue=1,offvalue=0)
+c1.grid(column = 0, row = 0)
+
+c_v2 = tk.IntVar()
+c2 = tk.Checkbutton(my_w,text='Brian Simpson',variable=c_v2,
+	onvalue=1,offvalue=0)
+c2.grid(column = 1, row = 0)
+
+delayms = 100
+
+def setButtons(string):
+    if(string == "Edward Simpson"):
+        c_v1.set(True)
+    if(string == "Brian Simpson"):
+        c_v2.set(True)
 
 def checkFaces():
     ret, frame = camera.read()
@@ -31,6 +53,7 @@ def checkFaces():
                 counts[name] = counts.get(name, 0) + 1
             name = max(counts, key=counts.get)
         names.append(name)
+        setButtons(name)
         for ((x, y, w, h), name) in zip(faces, names):
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             cv2.putText(frame, name, (x, y), cv2.FONT_HERSHEY_SIMPLEX,
@@ -40,6 +63,8 @@ def checkFaces():
     if cv2.waitKey(1) & 0xFF == 27:
         camera.release()
         cv2.destroyAllWindows()
-
-while True:
-    checkFaces()
+    my_w.after(delayms,checkFaces)
+        
+c_v1.set(0)
+my_w.after(delayms,checkFaces)
+my_w.mainloop()
